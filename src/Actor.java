@@ -5,8 +5,9 @@ import bagel.*;
 import bagel.util.Point;
 
 public abstract class Actor {
-    protected int tileX;
-    protected int tileY;
+    private static final String DIRECTORY="res";
+    private int tileX;
+    private int tileY;
                 //these give location in terms of tiles (not pixels)
     protected static final int xDimension = 0;
     protected static final int yDimension = 1;
@@ -18,6 +19,26 @@ public abstract class Actor {
     public Actor(int tileX, int tileY) {
         this.tileX=tileX;
         this.tileY=tileY;
+    }
+
+    public int getTileX() {
+        return tileX;
+    }
+
+    public int getTileY() {
+        return tileY;
+    }
+
+    public static String getDirectory() {
+        return directory;
+    }
+
+    public void setTileX(int tileX) {
+        this.tileX = tileX;
+    }
+
+    public void setTileY(int tileY) {
+        this.tileY = tileY;
     }
 
     //used by ShadowLife.update() to update this actor

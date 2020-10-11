@@ -5,7 +5,7 @@ import bagel.*;
 
 
 public class Tree extends Actor {
-    private static Image image=new Image("res/images/tree.png");
+    private static Image image=new Image(DIRECTORY+"/images/tree.png");
                                         //image for all trees
 
     public Tree(int tileX, int tileY) {
