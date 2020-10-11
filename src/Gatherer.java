@@ -4,7 +4,7 @@ import java.util.Random;
 public class Gatherer extends Actor {
     //2-Dimensional game. Attribute is number of dimensions
     private static final int DIMENSIONS=2;
-    private static final Image image=new Image(DIRECTORY)+"/images/gatherer.png");
+    private static final Image image=new Image(DIRECTORY+"/images/gatherer.png");
         //image for all gatherers
     private int[] direction = new int[DIMENSIONS];
         //direction vector for current direction

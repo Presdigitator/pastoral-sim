@@ -5,7 +5,8 @@ import bagel.*;
 import bagel.util.Point;
 
 public abstract class Actor {
-    private static final String DIRECTORY="res";
+    World world;
+    public static final String DIRECTORY="res";
     private int tileX;
     private int tileY;
                 //these give location in terms of tiles (not pixels)
@@ -30,7 +31,7 @@ public abstract class Actor {
     }
 
     public static String getDirectory() {
-        return directory;
+        return DIRECTORY;
     }
 
     public void setTileX(int tileX) {
@@ -59,8 +60,8 @@ public abstract class Actor {
 
     //returns coordinates of pixel location for the actor's current tile
     protected final Point tileToPixel(){
-        double pixelX = (this.tileX)*ShadowLife.getTileSize();
-        double pixelY = (this.tileY)*ShadowLife.getTileSize();
+        double pixelX = (this.tileX)*world.getTileSize();
+        double pixelY = (this.tileY)*world.getTileSize();
         return new Point(pixelX, pixelY);
     }
 
@@ -68,9 +69,9 @@ public abstract class Actor {
     private boolean isInWindow(int tileX, int tileY) {
         boolean isIn = true;
         if ((tileX<(-screenZoneBuffer) )|| (tileY<(-screenZoneBuffer)) ||
-                (tileX>(ShadowLife.getWidth()/ShadowLife.getTileSize())+
+                (tileX>(Window.getWidth()/world.getTileSize())+
                         screenZoneBuffer) ||
-               (tileY>(ShadowLife.getHeight()/ShadowLife.getTileSize()+
+               (tileY>(Window.getHeight()/world.getTileSize()+
                        screenZoneBuffer))) {
             isIn=false;
         }
