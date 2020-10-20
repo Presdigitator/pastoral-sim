@@ -1,80 +1,80 @@
 //Actor.java: Represents actors within the game, who may or may not move
 //Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
 
-import bagel.*;
+import bagel.Image;
+import bagel.Window;
 import bagel.util.Point;
 
 public abstract class Actor {
-    World world;
-    public static final String DIRECTORY="res";
-    private int tileX;
-    private int tileY;
-                //these give location in terms of tiles (not pixels)
-    protected static final int xDimension = 0;
-    protected static final int yDimension = 1;
-                //which index (in directions) gives x vs. y value
-    private static final int screenZoneBuffer=1;
-                /*how far offscreen will we continue
-                  *calling render method for an actor (in number of tiles)*/
 
-    public Actor(int tileX, int tileY) {
-        this.tileX=tileX;
-        this.tileY=tileY;
+    public static final String IMAGE_DIRECTORY = "res/images/";
+    public static final Class<?>[] argClasses = {TileCoordinates.class, String.class};
+    /* How far offscreen will we continue
+     *calling render method for an actor (in number of tiles):
+     */
+    private static final int screenZoneBuffer = 1;
+    private TileCoordinates tile;
+    private World world;
+
+
+    public Actor(TileCoordinates tile) {
+        this.tile = tile;
     }
 
-    public int getTileX() {
-        return tileX;
+
+    public TileCoordinates getTile() {
+        return tile;
     }
 
-    public int getTileY() {
-        return tileY;
+
+    public void setTile(TileCoordinates tile) {
+        this.tile = tile;
     }
 
-    public static String getDirectory() {
-        return DIRECTORY;
-    }
-
-    public void setTileX(int tileX) {
-        this.tileX = tileX;
-    }
-
-    public void setTileY(int tileY) {
-        this.tileY = tileY;
-    }
-
-    //used by ShadowLife.update() to update this actor
-    public abstract void update();
-
-    //renders this actor on screen (if applicable)
+    /** This method renders the actor onscreen, if within bounds of screen
+     *
+     */
     public void render() {
         //checks if within visible window
-        if (isInWindow(this.tileX, this.tileY)) {
+        if (isInWindow(this.tile)) {
             //Convert tile location to pixel location and draw image
-            Point centre = this.tileToPixel();
-            this.getImage().drawFromTopLeft(centre.x,centre.y);
+            Point centre = this.tile.toPixels();
+            this.getImage().drawFromTopLeft(centre.x, centre.y);
         }
     }
 
-    //returns image of the actor
-    protected abstract Image getImage();
-
-    //returns coordinates of pixel location for the actor's current tile
-    protected final Point tileToPixel(){
-        double pixelX = (this.tileX)*world.getTileSize();
-        double pixelY = (this.tileY)*world.getTileSize();
-        return new Point(pixelX, pixelY);
-    }
-
-    //checks if given tile is within visible window  (with buffer to be safe)
-    private boolean isInWindow(int tileX, int tileY) {
+    /*This method checks if given tile is within visible window
+     * (with buffer to be safe)
+     *
+     */
+    private boolean isInWindow(TileCoordinates tile) {
         boolean isIn = true;
-        if ((tileX<(-screenZoneBuffer) )|| (tileY<(-screenZoneBuffer)) ||
-                (tileX>(Window.getWidth()/world.getTileSize())+
+        if ((tile.getX() < (-screenZoneBuffer)) || (tile.getY() < (-screenZoneBuffer)) ||
+                (tile.getX() > (Window.getWidth() / TileCoordinates.TILE_SIZE) +
                         screenZoneBuffer) ||
-               (tileY>(Window.getHeight()/world.getTileSize()+
-                       screenZoneBuffer))) {
-            isIn=false;
+                (tile.getY() > (Window.getHeight() / TileCoordinates.TILE_SIZE +
+                        screenZoneBuffer))) {
+            isIn = false;
         }
         return isIn;
     }
+
+    /** Responds appropriately to agent standing on this actor
+     * @param agent The agent standing on this actor
+      */
+    public void stoodOn(Agent agent) {
+
+    }
+
+    /** Used by ShadowLife.update() to update this actor
+     *
+     */
+    public void update() {
+    }
+
+    /** Returns the image of the actor.
+     *
+     * @return Image The image of the actor
+     */
+    protected abstract Image getImage();
 }
