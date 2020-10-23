@@ -58,7 +58,9 @@ public abstract class Actor {
     /**
      * Takes an actorType and creates an Actor
      * of appropriate subClass and type
-     *
+     *  Referred to https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
+     *  and https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
+     *   for techniques for declaring differing subclasses based on a parameter.
      * @param tile The actor's initial tile location
      * @param type The type of the actor
      * @return Actor An actor matching the passed type and tile
@@ -89,6 +91,11 @@ public abstract class Actor {
     }
 
     public void setTile(TileCoordinates tile) {
+        /*
+         * If actor currently has a tile (i.e. is not
+         * just being initialised), removed the actor from
+         * its tile in OccupiedTiles.
+         */
         if (this.tile != null) {
             world.removeFromTile(this);
         }

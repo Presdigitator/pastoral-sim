@@ -70,6 +70,12 @@ public class Gatherer extends Agent {
             case FENCE:
                 collideWithFence(basicActor);
                 break;
+            case SIGNUP:
+            case SIGNDOWN:
+            case SIGNLEFT:
+            case SIGNRIGHT:
+                collideWithSign(basicActor);
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + basicActor.getType());
         }
@@ -83,6 +89,14 @@ public class Gatherer extends Agent {
     private void collideWithFence(BasicActor fence) {
         setActive(false);
         setTile(getPreviousTile());
+    }
+
+    /**
+     * Collision with sign, changes direction of agent
+     * @param basicActor The sign collided with
+     */
+    private void collideWithSign(BasicActor basicActor){
+        setDirection(basicActor.getType().direction);
     }
 
     /**

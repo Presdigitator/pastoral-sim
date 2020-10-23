@@ -50,9 +50,7 @@ public class World {
     /* Load the world info and create actors.
      *Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ for
      *how to load and read csv files with Java.
-     * Referred to https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
-     * and https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
-     * for techniques for declaring differing subclasses based on a parameter. */
+    */
     private void loadWorld(String worldFile) throws IOException, InvalidWorldLineException {
         BufferedReader csvReader;
         csvReader = new BufferedReader(new FileReader(worldFile));
@@ -172,7 +170,15 @@ public class World {
      * @param actor The actor to remove
      */
     public void removeFromTile(Actor actor) {
+        // Remove actor from its tile
         OccupiedTiles.get(actor.getTile()).remove(actor);
+        /*
+        * If the tile's queue is now empty, remove the tile from
+        * OccupiedTiles
+        * */
+        if(OccupiedTiles.get(actor.getTile()).isEmpty()) {
+            OccupiedTiles.remove(actor.getTile());
+        }
     }
 
     /**
