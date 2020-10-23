@@ -1,8 +1,8 @@
 /**
- * ShadowLife.java: Simulation
+  *ShadowLife.java: Simulation
  * Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ about
- * loading and reading csv files with Java.
- *
+  *loading and reading csv files with Java.
+
  * @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
  */
 
@@ -18,7 +18,7 @@ public class ShadowLife extends AbstractGame {
     private static final int NUM_CL_ARGS = 3;
     private static final int TICK_RATE_INDEX = 0;
     private static final int MAX_TICKS_INDEX = 1;
-    private static final int WORLD_FILE_INDEX = 3;
+    private static final int WORLD_FILE_INDEX = 2;
     private static final Point BACKGROUND_TOP_LEFT = new Point(0, 0);
     private static Image backgroundImage;
     // Length of tick in milliseconds:
