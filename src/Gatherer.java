@@ -59,52 +59,13 @@ public class Gatherer extends Agent {
         rotateClockwiseNinety(PILE_TURNS);
     }
 
-    /** Respond to collision with a BasicActor
-     *
-     * @param basicActor the basicActor this agent is on
-     */
     @Override
-    public void collideWith(BasicActor basicActor) {
-        // Respond differently depending on type
-        switch(basicActor.getType()) {
-            case FENCE:
-                collideWithFence(basicActor);
-                break;
-            case SIGNUP:
-            case SIGNDOWN:
-            case SIGNLEFT:
-            case SIGNRIGHT:
-                collideWithSign(basicActor);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + basicActor.getType());
-        }
+    public void collideWithPad() {
 
     }
 
-    /**
-     * Collision with fence, stops agent.
-     * @param fence The fence collided with.
-     */
-    private void collideWithFence(BasicActor fence) {
-        setActive(false);
-        setTile(getPreviousTile());
-    }
-
-    /**
-     * Collision with sign, changes direction of agent
-     * @param basicActor The sign collided with
-     */
-    private void collideWithSign(BasicActor basicActor){
-        setDirection(basicActor.getType().direction);
-    }
-
-    /**
-     * Respond to collision with other agent
-     * @param agent the other agent this agent is standing on
-     */
     @Override
-    public void collideWith(Agent agent) {
+    public void collideWith(Gatherer gatherer) {
 
     }
 
@@ -114,9 +75,8 @@ public class Gatherer extends Agent {
      * @return Agent A new Gatherer
      */
     @Override
-    public Agent copy() {
-        //> implement
-        return null;
+    public Agent mitosisCopy() {
+        return new Gatherer(getTile(), getWorld(), getType());
     }
 
 
@@ -126,8 +86,9 @@ public class Gatherer extends Agent {
      */
     @Override
     public void stoodOnBy(Agent agent) {
-
+        agent.collideWith(this);
     }
+
 
 
 }

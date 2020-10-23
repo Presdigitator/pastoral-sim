@@ -88,6 +88,10 @@ public class ShadowLife extends AbstractGame {
     running logic and rendering simulation elements. */
     @Override
     protected void update(Input input) {
+        // If no more active agents, halt
+        if(!world.anyActive()) {
+            halt();
+        }
         // If it's time for another tick,  update actors
         long time = System.currentTimeMillis();
         if ((time - this.lastTick) >= TICK_RATE) {
@@ -97,9 +101,8 @@ public class ShadowLife extends AbstractGame {
         //draw background and actors
         backgroundImage.drawFromTopLeft(
                 BACKGROUND_TOP_LEFT.x, BACKGROUND_TOP_LEFT.y);
-        for (Actor actor : world.getAllActors()) {
-            actor.render();
-        }
+        world.renderAll();
+
 
     }
 
@@ -114,15 +117,13 @@ public class ShadowLife extends AbstractGame {
             System.out.println("Timed out");
             System.exit(-1);
         }
-        // Else loop through gatherers then thieves and run update algorithms
-        else {
-            world.updateActors(Actor.ActorType.GATHERER);
-            world.updateActors(Actor.ActorType.THIEF);
-            // If no more active agents, halt
-            if(!world.anyActive()) {
-                halt();
-            }
-        }
+        // Otherwise loop through gatherers then thieves and run update algorithms
+        world.updateAgents(Actor.ActorType.GATHERER);
+        world.updateAgents(Actor.ActorType.THIEF);
+        // Add newly created 'mitosized' agents to the allActors, and activeAgents
+        world.offTheBench();
+        // Remove inactive agents from activeAgents list
+        world.clearInactive();
 
     }
 

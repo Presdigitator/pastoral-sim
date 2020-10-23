@@ -1,6 +1,7 @@
 Tree,384,384
 Stockpile,768,384
 Gatherer,512,384
-Fence,128,384
+Fence,128,64
 Gatherer,320,384
 Fence,704,384
+SignUp,128,384

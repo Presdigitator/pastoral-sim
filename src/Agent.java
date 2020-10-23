@@ -11,6 +11,10 @@ public abstract class Agent extends Actor {
     private boolean active;
     private TileCoordinates previousTile;
     private Direction direction;
+    //
+    private static final int POOL_TURNS_ONE = 1;
+    private static final int POOL_TURNS_TWO=3;
+
 
 
     public Agent(TileCoordinates tile, World world, ActorType type) {
@@ -37,23 +41,18 @@ public abstract class Agent extends Actor {
 
     /**
      * Set active attribute
+     *
      * @param active boolean value to set active to
      */
     public void setActive(boolean active) {
         // If this.active already matches active, do nothing
-        if(this.active == active){
+        if (this.active == active) {
             return;
         }
         // Otherwise update active status
         else {
             // Set active status
             this.active = active;
-            // Update count of active agents
-            if (active) {
-                getWorld().addActive();
-            } else {
-                getWorld().removeActive();
-            }
         }
     }
 
@@ -117,25 +116,75 @@ public abstract class Agent extends Actor {
      */
     public abstract void collideWith(Pile pile);
 
+    public abstract void collideWith(Gatherer gatherer);
+
     /**
-     * react to collision with a Tree
+     * Respond to collision with a BasicActor
      *
      * @param basicActor the basicActor this agent is on
      */
-    public abstract void collideWith(BasicActor basicActor);
+    public void collideWith(BasicActor basicActor) {
+        // Respond differently depending on type
+        switch (basicActor.getType()) {
+            case FENCE:
+                collideWithFence(basicActor);
+                break;
+            case SIGNUP:
+            case SIGNDOWN:
+            case SIGNLEFT:
+            case SIGNRIGHT:
+                collideWithSign(basicActor);
+                break;
+            case PAD:
+                collideWithPad();
+                break;
+            case POOL:
+                collideWithPool();
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + basicActor.getType());
+        }
+
+    }
 
     /**
-     * react to collision with another Agent
+     * Collision with fence, stops agent.
      *
-     * @param agent the other agent this agent is standing on
+     * @param fence The fence collided with.
      */
-    public abstract void collideWith(Agent agent);
-
+    private void collideWithFence(BasicActor fence) {
+        setActive(false);
+        setTile(getPreviousTile());
+    }
 
     /**
-     * Splits agent into two on a mitosis pool
+     * Collision with sign, changes direction of agent
+     *
+     * @param basicActor The sign collided with
      */
-    protected void mitosize() {
+    private void collideWithSign(BasicActor basicActor) {
+        setDirection(basicActor.getType().direction);
+    }
+
+    public abstract void collideWithPad();
+
+    /**
+     * Collision with pool. Splits agent into two.
+     * Bam, Mitosized!
+     */
+    protected void collideWithPool() {
+        mitosize(POOL_TURNS_ONE);
+        mitosize(POOL_TURNS_TWO);
+
+        selfDestruct();
+
+    }
+
+    public void mitosize(int turns) {
+        Agent agent = mitosisCopy();
+        agent.rotateClockwiseNinety(turns);
+        agent.move();
+        getWorld().addToBench(agent);
 
     }
 
@@ -164,6 +213,12 @@ public abstract class Agent extends Actor {
      *
      * @return Agent An agent of the same class
      */
-    public abstract Agent copy();
+    public abstract Agent mitosisCopy();
+
+    private void selfDestruct() {
+        setActive(false);
+        getWorld().removeFromActors(this);
+        getWorld().removeFromTile(this);
+    }
 
 }

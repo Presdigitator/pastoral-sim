@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class World {
     // Which columns of the CSV have which information:
@@ -17,13 +14,15 @@ public class World {
     private final ShadowLife game;
     // Array of all the non-agent actors:
     private final ArrayList<Actor> allActors = new ArrayList<>();
+    //
+    private final ArrayList<Agent> benchedAgents = new ArrayList<>();
+    //
+    private final ArrayList<Agent> activeAgents = new ArrayList<>();
 
 
     // HashMap from each occupied tile to the actors on that tile, for quick 'collision' detection
     private final HashMap<TileCoordinates, PriorityQueue<Actor>> OccupiedTiles = new HashMap<>();
 
-    // Track number of active agents
-    private int numActive=0;
 
     // Constructor
     public World(ShadowLife game, String worldFile) {
@@ -42,15 +41,12 @@ public class World {
         }
     }
 
-    public ArrayList<Actor> getAllActors() {
-        return allActors;
-    }
 
 
     /* Load the world info and create actors.
      *Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ for
      *how to load and read csv files with Java.
-    */
+     */
     private void loadWorld(String worldFile) throws IOException, InvalidWorldLineException {
         BufferedReader csvReader;
         csvReader = new BufferedReader(new FileReader(worldFile));
@@ -97,21 +93,26 @@ public class World {
             /*Add actor to allActors list
              */
             allActors.add(actor);
+            if ((type.equals(Actor.ActorType.GATHERER)) |
+                    (type.equals(Actor.ActorType.THIEF))) {
+                Agent agent = (Agent) actor;
+                activeAgents.add(agent);
+            }
         }
     }
 
 
     /**
-     * Loops through allActors list and updates all
-     * actors of the passed type. Used to update
+     * Loops through allAgents list and updates all
+     * agents of the passed type. Used to update
      * Gatherers and Thieves.
      *
      * @param type The actor type to update.
      */
-    public void updateActors(Actor.ActorType type) {
-        for (Actor actor : allActors) {
-            if (actor.getType().equals(type)) {
-                actor.update();
+    public void updateAgents(Actor.ActorType type) {
+        for (Agent agent : activeAgents) {
+            if (agent.getType().equals(type)) {
+                agent.update();
             }
         }
     }
@@ -167,39 +168,75 @@ public class World {
 
     /**
      * Removes actor from given tile in OccupiedTiles
+     *
      * @param actor The actor to remove
      */
     public void removeFromTile(Actor actor) {
         // Remove actor from its tile
         OccupiedTiles.get(actor.getTile()).remove(actor);
         /*
-        * If the tile's queue is now empty, remove the tile from
-        * OccupiedTiles
-        * */
-        if(OccupiedTiles.get(actor.getTile()).isEmpty()) {
+         * If the tile's queue is now empty, remove the tile from
+         * OccupiedTiles
+         * */
+        if (OccupiedTiles.get(actor.getTile()).isEmpty()) {
             OccupiedTiles.remove(actor.getTile());
         }
     }
 
     /**
      * Checks if any active agents
+     *
      * @return boolean True if any active
      */
     public boolean anyActive() {
-        return numActive > 0;
+        return !activeAgents.isEmpty();
+    }
+
+
+    public void addToBench(Agent agent) {
+        benchedAgents.add(agent);
+    }
+
+    public void offTheBench() {
+        for (Agent agent : benchedAgents) {
+            allActors.add(agent);
+            if(agent.isActive()) {
+                activeAgents.add(agent);
+            }
+        }
+        benchedAgents.clear();
+    }
+
+    public void removeFromActors(Actor actor) {
+        allActors.remove(actor);
+    }
+
+    public void addToActive(Agent agent) {
+        activeAgents.add(agent);
+    }
+
+    public void removeFromActive(Agent agent) {
+        activeAgents.add(agent);
     }
 
     /**
-     * Add 1 to count of active agents
+     * Removes inactive agents from activeAgents.
+     * credit: deleting from arraylist using iterator, adapted from:
+     * https://stackoverflow.com/questions/10738634/delete-data-from-arraylist-with-a-for-loop
      */
-    public void addActive() {
-        numActive++;
+    public void clearInactive() {
+        Iterator<Agent> it = activeAgents.iterator();
+        while(it.hasNext()) {
+            Agent agent = it.next();
+            if(!agent.isActive()) {
+                it.remove();
+            }
+        }
+
     }
 
-    /**
-     * Reduce count of active agents by 1.
-     */
-    public void removeActive() {
-        numActive--;
+    public void renderAll() {
+        for (Actor actor : allActors) {
+            actor.render();
     }
 }

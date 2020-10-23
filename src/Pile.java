@@ -63,4 +63,22 @@ public class Pile extends Actor {
     public void getFruitFrom(Agent agent) {
         fruits.getFrom(agent);
     }
+
+    /**
+     *  Returns whether has any fruit
+     * @return boolean True if has at least one fruit,
+     *
+     */
+    public boolean hasFruit() {
+            return fruits.hasFruit();
+    }
+
+    /**
+     * Fruit picked from pile.
+     * @param agent The agent picking
+     * */
+    public void pickFruit(Agent agent) {
+        // 'pick' a fruit
+            fruits.giveTo(agent);
+    }
 }
