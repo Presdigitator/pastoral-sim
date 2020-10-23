@@ -1,5 +1,8 @@
-//Tree.java: Represents Tree-type actors
-//Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+/**
+ * Tree.java: Represents Tree-type actors
+ *
+ * @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+ */
 
 import bagel.Image;
 
@@ -10,8 +13,11 @@ public class Tree extends Actor {
     // Fruits object for this tree's fruit store:
     private Fruits fruits;
 
+    /**
+     * Constructor
+     */
     public Tree(TileCoordinates tile, World world, ActorType type) {
-        super(tile,world, type);
+        super(tile, world, type);
         // Set type of this tree according to passed type
         setType(type);
         // Set image to image matching the tree variety
@@ -25,15 +31,17 @@ public class Tree extends Actor {
 
     }
 
-    /** Tree update method does nothing, as tree does not move.
-     *
+    /**
+     * Tree update method does nothing, as tree does not move.
      */
     @Override
     public void update() {
 
     }
 
-    //returns tree image
+    /**
+     * returns tree image
+     */
     @Override
     public Image getImage() {
         return image;
@@ -42,6 +50,7 @@ public class Tree extends Actor {
     /**
      * Calls collision method for agent standing on this Tree
      * (Part of Visitor Pattern)
+     *
      * @param agent The agent that is standing on this actor
      */
     @Override
@@ -51,7 +60,7 @@ public class Tree extends Actor {
 
     /**
      * Fruit picked from tree. If normal tree reduce store of fruit
-     * */
+     */
     public void pickFruit(Agent agent) {
         // If normal tree, 'pick' a fruit
         if (getType().equals(ActorType.TREE)) {
@@ -64,13 +73,14 @@ public class Tree extends Actor {
     }
 
     /**
-     *  Returns whether has any fruit
+     * Returns whether has any fruit
+     *
      * @return boolean True if has at least one fruit,
      * or is golden tree
      */
     public boolean hasFruit() {
         // If golden tree, always has fruit so return true
-        if(getType().equals(ActorType.GOLDENTREE)){
+        if (getType().equals(ActorType.GOLDENTREE)) {
             return true;
         }
         // Otherwise check
@@ -90,4 +100,4 @@ public class Tree extends Actor {
         }
     }
 
-   }
+}

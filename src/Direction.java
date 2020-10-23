@@ -1,6 +1,6 @@
-/* Direction.java: Stores a direction in the xy plane as a 2-d unit vector.
+/** Stores a direction in the xy plane as a 2-d unit vector.
  *
- *Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
+ *@author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
 
 import java.util.Random;
 
@@ -15,6 +15,8 @@ public enum Direction {
     // Array and number  of all values, used in getRandomDirection()
     private static final Direction[] VALUES;
     private static final int SIZE;
+
+    // Array and size of enum, used in private methods
     static {
         VALUES = values();
         SIZE = VALUES.length;
@@ -27,15 +29,28 @@ public enum Direction {
 
     private final Random RAND = new Random();
 
+    /**
+     * Constructor
+     * @param x x-coordinate
+     * @param y y-coordinate
+     */
     Direction(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Returns x value
+     * @return int x value
+     */
     public int getX() {
         return x;
     }
 
+    /**
+     * Returns y value
+     * @return int y-value
+     */
     public int getY() {
         return y;
     }
@@ -53,7 +68,7 @@ public enum Direction {
          *Returns the next value of the enum, e.g. if
          * UP, returns RIGHT
          */
-        return VALUES[(this.ordinal()+times) % SIZE];
+        return VALUES[(this.ordinal() + times) % SIZE];
     }
 
     /**

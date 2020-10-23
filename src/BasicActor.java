@@ -1,7 +1,6 @@
-/* BasicActor.java: Represents actors which have no
+/** BasicActor.java: Represents actors which have no
  * functionality or attributes beyond their image.
- */
-//Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+* @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
 
 import bagel.Image;
 
@@ -11,6 +10,9 @@ public class BasicActor extends Actor {
 
     private final Image image;
 
+    /**
+     * Constructor for BasicActor
+     */
     public BasicActor(TileCoordinates tile, World world, ActorType type) {
         super(tile, world, type);
         /* Depending on what variety of actor has been specified,
@@ -27,6 +29,11 @@ public class BasicActor extends Actor {
 
     }
 
+    /**
+     * Get image value
+     *
+     * @return Image This basicActor's image
+     */
     @Override
     public Image getImage() {
         return image;
@@ -35,6 +42,7 @@ public class BasicActor extends Actor {
     /**
      * Call collision method for agent standing on this actor
      * (Visitor Pattern)
+     *
      * @param agent The agent that is standing on this actor
      */
     @Override

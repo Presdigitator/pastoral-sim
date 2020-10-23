@@ -1,40 +1,64 @@
-/* Agent.java: Represents actors which can move and take actions.
+/** Represents actors which can move and take actions.
  *
- *Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
+ *@author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
 
 import java.util.PriorityQueue;
 import java.util.Random;
 
 public abstract class Agent extends Actor {
+    /* Number of times to rotate 90 degrees clockwise
+     *when on mitosis pool:
+     */
+    private static final int POOL_TURNS_ONE = 1;
+    private static final int POOL_TURNS_TWO = 3;
     private Random rand = new Random();
     private boolean carrying;
     private boolean active;
     private TileCoordinates previousTile;
     private Direction direction;
-    //
-    private static final int POOL_TURNS_ONE = 1;
-    private static final int POOL_TURNS_TWO=3;
 
 
-
+    /**
+     * Constructor for Agent
+     */
     public Agent(TileCoordinates tile, World world, ActorType type) {
         super(tile, world, type);
         previousTile = null;
     }
 
 
+    /**
+     * Calls Actor's setType
+     *
+     * @param type New value for type
+     */
     public void setType(ActorType type) {
         super.setType(type);
     }
 
+    /**
+     * Gets carrying
+     *
+     * @return value of carrying
+     */
     public boolean isCarrying() {
         return carrying;
     }
 
+    /**
+     * Sets carrying
+     *
+     * @param carrying New value for carrying
+     */
     public void setCarrying(boolean carrying) {
         this.carrying = carrying;
     }
 
+    /**
+     * Gets active
+     *
+     * @return value of active
+     */
     public boolean isActive() {
         return active;
     }
@@ -56,12 +80,40 @@ public abstract class Agent extends Actor {
         }
     }
 
+    /**
+     * Gets previousTile
+     *
+     * @return value of previousTile
+     */
     public TileCoordinates getPreviousTile() {
         return previousTile;
     }
 
+    /**
+     * Sets previousTile
+     *
+     * @param previousTile New value for previousTile
+     */
     public void setPreviousTile(TileCoordinates previousTile) {
         this.previousTile = previousTile;
+    }
+
+    /**
+     * Gets direction
+     *
+     * @return value of direction
+     */
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /**
+     * Sets direction
+     *
+     * @param direction New value for direction
+     */
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 
     /**
@@ -83,13 +135,6 @@ public abstract class Agent extends Actor {
 
     }
 
-    public Direction getDirection() {
-        return direction;
-    }
-
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-    }
 
     /**
      * Rotates ninety-degrees clockwise the number
@@ -110,12 +155,17 @@ public abstract class Agent extends Actor {
     public abstract void collideWith(Tree tree);
 
     /**
-     * react to collision with a Pile
+     * React to collision with a Pile
      *
      * @param pile the Pile this agent is on
      */
     public abstract void collideWith(Pile pile);
 
+    /**
+     * React to collision with gatherer
+     *
+     * @param gatherer The gatherer this agent is on
+     */
     public abstract void collideWith(Gatherer gatherer);
 
     /**
@@ -147,20 +197,18 @@ public abstract class Agent extends Actor {
 
     }
 
-    /**
+    /*
      * Collision with fence, stops agent.
      *
-     * @param fence The fence collided with.
      */
     private void collideWithFence(BasicActor fence) {
         setActive(false);
         setTile(getPreviousTile());
     }
 
-    /**
+    /*
      * Collision with sign, changes direction of agent
      *
-     * @param basicActor The sign collided with
      */
     private void collideWithSign(BasicActor basicActor) {
         setDirection(basicActor.getType().direction);
@@ -168,19 +216,22 @@ public abstract class Agent extends Actor {
 
     public abstract void collideWithPad();
 
-    /**
-     * Collision with pool. Splits agent into two.
-     * Bam, Mitosized!
+    /*
+     * Mitosis effect. Make two copies and send them in opposite directions
+     * before self-destructing
      */
-    protected void collideWithPool() {
+    private void collideWithPool() {
         mitosize(POOL_TURNS_ONE);
         mitosize(POOL_TURNS_TWO);
-
         selfDestruct();
 
     }
 
-    public void mitosize(int turns) {
+    /*
+     * Make a copy of the agent that turns the number of times
+     * specified by turns, and moves.
+     */
+    private void mitosize(int turns) {
         Agent agent = mitosisCopy();
         agent.rotateClockwiseNinety(turns);
         agent.move();
@@ -215,6 +266,7 @@ public abstract class Agent extends Actor {
      */
     public abstract Agent mitosisCopy();
 
+    // "Destroys" this Agent.
     private void selfDestruct() {
         setActive(false);
         getWorld().removeFromActors(this);

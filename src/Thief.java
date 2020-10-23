@@ -1,16 +1,19 @@
-/* Thief.java: Represents the thief actor.
+/** Represents the thief actor.
  *
- *Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
+ *@author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
 
 
 public class Thief extends Agent {
 
-    //
+    // Number times to turn at a pile:
     private static final int PILE_TURNS = 1;
     private static final int GATHERER_TURNS = 3;
     private boolean consuming;
     private boolean gathererEncountered = false;
 
+    /**
+     * Constructor
+     */
     public Thief(TileCoordinates tile, World world, ActorType type) {
         super(tile, world, type);
         super.setType(ActorType.THIEF);
@@ -21,11 +24,17 @@ public class Thief extends Agent {
 
     }
 
+    /**
+     * Check if consuming
+     */
     public boolean isConsuming() {
         return consuming;
     }
 
 
+    /**
+     * Set value of Consuming
+     */
     public void setConsuming(boolean consuming) {
         this.consuming = consuming;
     }
@@ -98,6 +107,9 @@ public class Thief extends Agent {
 
     }
 
+    /**
+     * Respond to collision with pad.
+     */
     @Override
     public void collideWithPad() {
         setConsuming(true);
@@ -115,6 +127,7 @@ public class Thief extends Agent {
         }
     }
 
+    // Respond to collision with hoard
     private void collideWithHoard(Pile hoard) {
         if (isConsuming()) {
             setConsuming(false);
@@ -132,6 +145,7 @@ public class Thief extends Agent {
 
     }
 
+    // Respond to collision with stockpile
     private void collideWithStockPile(Pile stockpile) {
         if (!isCarrying()) {
             if (stockpile.hasFruit()) {

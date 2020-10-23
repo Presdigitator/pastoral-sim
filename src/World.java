@@ -1,3 +1,7 @@
+/**
+ * Stores the world full of actors
+ */
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -14,9 +18,8 @@ public class World {
     private final ShadowLife game;
     // Array of all the non-agent actors:
     private final ArrayList<Actor> allActors = new ArrayList<>();
-    //
+    // Agents waited to be added to allActors:
     private final ArrayList<Agent> benchedAgents = new ArrayList<>();
-    //
     private final ArrayList<Agent> activeAgents = new ArrayList<>();
 
 
@@ -24,7 +27,9 @@ public class World {
     private final HashMap<TileCoordinates, PriorityQueue<Actor>> OccupiedTiles = new HashMap<>();
 
 
-    // Constructor
+    /**
+     * Constructor
+     */
     public World(ShadowLife game, String worldFile) {
         this.game = game;
         try {
@@ -40,7 +45,6 @@ public class World {
             System.exit(-1);
         }
     }
-
 
 
     /* Load the world info and create actors.
@@ -193,28 +197,44 @@ public class World {
     }
 
 
+    /**
+     * Add agent to benchedAgents
+     */
     public void addToBench(Agent agent) {
         benchedAgents.add(agent);
     }
 
+    /**
+     * move agent from benchedAgents
+     * to activeAgents
+     */
     public void offTheBench() {
         for (Agent agent : benchedAgents) {
             allActors.add(agent);
-            if(agent.isActive()) {
+            if (agent.isActive()) {
                 activeAgents.add(agent);
             }
         }
         benchedAgents.clear();
     }
 
+    /**
+     * Remove actor from allActors
+     */
     public void removeFromActors(Actor actor) {
         allActors.remove(actor);
     }
 
+    /**
+     * Add actor to activeAgents
+     */
     public void addToActive(Agent agent) {
         activeAgents.add(agent);
     }
 
+    /**
+     * Remove agent from activeAgents
+     */
     public void removeFromActive(Agent agent) {
         activeAgents.add(agent);
     }
@@ -226,17 +246,21 @@ public class World {
      */
     public void clearInactive() {
         Iterator<Agent> it = activeAgents.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Agent agent = it.next();
-            if(!agent.isActive()) {
+            if (!agent.isActive()) {
                 it.remove();
             }
         }
 
     }
 
+    /**
+     * Render all actors
+     */
     public void renderAll() {
         for (Actor actor : allActors) {
             actor.render();
+        }
     }
 }

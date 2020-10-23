@@ -1,6 +1,8 @@
-/* Pile.java: Represents actors which are used to store fruit.
+/**
+ * Pile.java: Represents actors which are used to store fruit.
+ *
+ * @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
  */
-//Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
 
 import bagel.Image;
 
@@ -23,6 +25,10 @@ public class Pile extends Actor {
     }
 
 
+    /**
+     * Gets value of image
+     * @return Image the image
+     */
     @Override
     public Image getImage() {
         return image;
@@ -70,7 +76,7 @@ public class Pile extends Actor {
      *
      */
     public boolean hasFruit() {
-            return fruits.hasFruit();
+        return fruits.hasFruit();
     }
 
     /**
@@ -79,6 +85,6 @@ public class Pile extends Actor {
      * */
     public void pickFruit(Agent agent) {
         // 'pick' a fruit
-            fruits.giveTo(agent);
+        fruits.giveTo(agent);
     }
 }

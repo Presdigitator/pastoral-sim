@@ -1,5 +1,6 @@
-//Actor.java: Represents actors within the game, who may or may not move
-//Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+/**Represents actors within the game, who may or may not move
+*@author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+ */
 
 import bagel.Image;
 import bagel.Window;
@@ -10,44 +11,28 @@ import java.lang.reflect.InvocationTargetException;
 
 public abstract class Actor {
 
+
+    /**
+     * Directory where images are stored
+     */
     public static final String IMAGE_DIRECTORY = "res/images/";
-    public static final Class<?>[] argClasses = {TileCoordinates.class, World.class, ActorType.class};
-    private static final Image THIEF_IMAGE =
-            new Image(IMAGE_DIRECTORY + "thief.png");
-    private static final Image GATHERER_IMAGE =
-            new Image(IMAGE_DIRECTORY + "gatherer.png");
-    private static final Image STOCKPILE_IMAGE =
-            new Image(IMAGE_DIRECTORY + "cherries.png");
-    private static final Image HOARD_IMAGE =
-            new Image(IMAGE_DIRECTORY + "hoard.png");
-    private static final Image UP_IMAGE =
-            new Image(IMAGE_DIRECTORY + "up.png");
-    private static final Image DOWN_IMAGE =
-            new Image(IMAGE_DIRECTORY + "down.png");
-    private static final Image LEFT_IMAGE =
-            new Image(IMAGE_DIRECTORY + "left.png");
-    private static final Image RIGHT_IMAGE =
-            new Image(IMAGE_DIRECTORY + "right.png");
-    private static final Image TREE_IMAGE =
-            new Image(IMAGE_DIRECTORY + "tree.png");
-    private static final Image GOLDEN_TREE_IMAGE =
-            new Image(IMAGE_DIRECTORY + "gold-tree.png");
-    private static final Image PAD_IMAGE =
-            new Image(IMAGE_DIRECTORY + "pad.png");
-    private static final Image FENCE_IMAGE =
-            new Image(IMAGE_DIRECTORY + "fence.png");
-    private static final Image POOL_IMAGE =
-            new Image(IMAGE_DIRECTORY + "pool.png");
+    // Array of classes used by actor constructor, used by getDeclaredConstructor()
+    private static final Class<?>[] argClasses = {TileCoordinates.class, World.class, ActorType.class};
+
 
     /* How far offscreen will we continue
      *calling render method for an actor (in number of tiles):
      */
     private static final int screenZoneBuffer = 1;
     private TileCoordinates tile = null;
-    private World world;
+    private final World world;
     private ActorType type;
-    private Image image;
+    private final Image image;
 
+    /**
+     * Constructor for Actor
+     *
+     */
     public Actor(TileCoordinates tile, World world, ActorType type) {
         this.world = world;
         this.type = type;
@@ -58,9 +43,10 @@ public abstract class Actor {
     /**
      * Takes an actorType and creates an Actor
      * of appropriate subClass and type
-     *  Referred to https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
-     *  and https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
-     *   for techniques for declaring differing subclasses based on a parameter.
+     * Referred to https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
+     * and https://stackoverflow.com/questions/34395589/selecting-subclass-based-on-user-input
+     * for techniques for declaring differing subclasses based on a parameter.
+     *
      * @param tile The actor's initial tile location
      * @param type The type of the actor
      * @return Actor An actor matching the passed type and tile
@@ -86,10 +72,11 @@ public abstract class Actor {
 
     }
 
-    public TileCoordinates getTile() {
-        return tile;
-    }
 
+    /**
+     * Sets tile attribute
+     * @param tile New tile value.
+     */
     public void setTile(TileCoordinates tile) {
         /*
          * If actor currently has a tile (i.e. is not
@@ -99,6 +86,7 @@ public abstract class Actor {
         if (this.tile != null) {
             world.removeFromTile(this);
         }
+        // Set new tile and add to this tile in world
         this.tile = tile;
         world.addToTile(this);
     }
@@ -115,10 +103,10 @@ public abstract class Actor {
         }
     }
 
-    /**This method checks if given tile is within visible window
+    /*
+     * This method checks if given tile is within visible window
      * (with buffer to be safe)
-     *@param tile The tile to check
-     * @return boolean True if within window+buffer
+     *
      */
     private boolean isInWindow(TileCoordinates tile) {
         boolean isIn = true;
@@ -139,22 +127,7 @@ public abstract class Actor {
     public void update() {
     }
 
-    /**
-     * Returns the image of the actor.
-     *
-     * @return Image The image of the actor
-     */
-    public Image getImage() {
-        return image;
-    }
 
-    public ActorType getType() {
-        return type;
-    }
-
-    public void setType(ActorType type) {
-        this.type = type;
-    }
 
     /**
      * Called when simulation halts,
@@ -163,10 +136,6 @@ public abstract class Actor {
      * actually print)
      */
     public void haltPrint() {
-    }
-
-    public World getWorld() {
-        return world;
     }
 
 
@@ -178,38 +147,87 @@ public abstract class Actor {
      */
     public abstract void stoodOnBy(Agent agent);
 
+    /**
+     * Sets type
+     *
+     * @param type New value for type
+     */
+    public void setType(ActorType type) {
+        this.type = type;
+    }
+
+    /**
+     * Gets tile
+     *
+     * @return value of tile
+     */
+    public TileCoordinates getTile() {
+        return tile;
+    }
+
+    /**
+     * Gets world
+     *
+     * @return value of world
+     */
+    public World getWorld() {
+        return world;
+    }
+
+    /**
+     * Gets type
+     *
+     * @return value of type
+     */
+    public ActorType getType() {
+        return type;
+    }
+
+    /**
+     * Gets image
+     *
+     * @return value of image
+     */
+    public Image getImage() {
+        return image;
+    }
 
     /**
      * Enum of all the actor types, with associated information
      * for each.
      */
     public enum ActorType {
-        FENCE(BasicActor.class, FENCE_IMAGE),
-        POOL(BasicActor.class, POOL_IMAGE),
-        SIGNUP(BasicActor.class, UP_IMAGE, Direction.UP),
-        SIGNDOWN(BasicActor.class, DOWN_IMAGE, Direction.DOWN),
-        SIGNLEFT(BasicActor.class, LEFT_IMAGE, Direction.LEFT),
-        SIGNRIGHT(BasicActor.class, RIGHT_IMAGE, Direction.RIGHT),
-        PAD(BasicActor.class, PAD_IMAGE),
-        GATHERER(Gatherer.class, GATHERER_IMAGE),
-        TREE(Tree.class, TREE_IMAGE),
-        GOLDENTREE(Tree.class, GOLDEN_TREE_IMAGE),
-        HOARD(Pile.class, HOARD_IMAGE),
-        STOCKPILE(Pile.class, STOCKPILE_IMAGE),
-        THIEF(Thief.class, THIEF_IMAGE);
+        FENCE(BasicActor.class, "fence.png"),
+        POOL(BasicActor.class, "pool.png"),
+        SIGNUP(BasicActor.class, "up.png", Direction.UP),
+        SIGNDOWN(BasicActor.class, "down.png", Direction.DOWN),
+        SIGNLEFT(BasicActor.class, "left.png", Direction.LEFT),
+        SIGNRIGHT(BasicActor.class, "right.png", Direction.RIGHT),
+        PAD(BasicActor.class, "pad.png"),
+        GATHERER(Gatherer.class, "gatherer.png"),
+        TREE(Tree.class, "tree.png"),
+        GOLDENTREE(Tree.class, "gold-tree.png"),
+        HOARD(Pile.class, "hoard.png"),
+        STOCKPILE(Pile.class, "cherries.png"),
+        THIEF(Thief.class, "thief.png");
 
         Class<? extends Actor> subClass;
         Image image;
         Direction direction = null;
 
-        ActorType(Class<? extends Actor> subClass, Image image) {
+        /**
+         * Default constructor
+         */
+        ActorType(Class<? extends Actor> subClass, String imageName) {
             this.subClass = subClass;
-            this.image = image;
+            this.image = new Image(IMAGE_DIRECTORY + imageName);
         }
 
-        ActorType(Class<? extends Actor> subClass, Image image, Direction direction) {
-            this.subClass = subClass;
-            this.image = image;
+        /**
+         * Constructor used by signs (for direction)
+         */
+        ActorType(Class<? extends Actor> subClass, String imageName, Direction direction) {
+            this(subClass, imageName);
             this.direction = direction;
         }
     }

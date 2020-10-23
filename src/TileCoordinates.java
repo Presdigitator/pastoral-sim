@@ -1,36 +1,26 @@
-/* Thief.java: Represents the thief actor.
+/**
+ * Thief.java: Represents the thief actor.
  *
- *Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
+ * @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+ */
 
 import bagel.util.Point;
 
 import java.util.Objects;
 
 public class TileCoordinates {
-    int x;
-    int y;
     /* Size of tiles in pixels */
     public static final int TILE_SIZE = 64;
-
-    TileCoordinates(int x, int y){
-        this.x=x;
-        this.y=y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
+    int x;
+    int y;
 
     /**
-     * Returns tile location in pixel coordinates.
-     * @return Point The pixel coordinates of the tile
+     * Constructor
+     *
      */
-    public Point toPixels() {
-        return new Point(x*TILE_SIZE, y*TILE_SIZE);
+    TileCoordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     /**
@@ -41,11 +31,35 @@ public class TileCoordinates {
      */
     public static TileCoordinates fromPixels(double pixelX, double pixelY) throws UnalignedPixelException {
         // Check that pixel location is valid, i.e. a multiple of the tile size
-        if ((pixelX%TILE_SIZE != 0) | (pixelY%TILE_SIZE != 0)) {
+        if ((pixelX % TILE_SIZE != 0) | (pixelY % TILE_SIZE != 0)) {
             throw new UnalignedPixelException(pixelX, pixelY);
         }
         // Return a TileCoordinates object with coordinates in tiles (rather than pixels)
-        return new TileCoordinates((int)pixelX/TILE_SIZE, (int)pixelY/TILE_SIZE);
+        return new TileCoordinates((int) pixelX / TILE_SIZE, (int) pixelY / TILE_SIZE);
+    }
+
+    /**
+     * Get x value
+     *
+     */
+    public int getX() {
+        return x;
+    }
+
+    /**
+     * Get y value
+     *
+     */
+    public int getY() {
+        return y;
+    }
+
+    /**
+     * Returns tile location in pixel coordinates.
+     * @return Point The pixel coordinates of the tile
+     */
+    public Point toPixels() {
+        return new Point(x * TILE_SIZE, y * TILE_SIZE);
     }
 
     /**

@@ -1,7 +1,10 @@
-//ShadowLife.java: Simulation
-//Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
-/*Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ about
- * loading and reading csv files with Java. */
+/**
+ * ShadowLife.java: Simulation
+ * Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ about
+ * loading and reading csv files with Java.
+ *
+ * @author Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au
+ */
 
 import bagel.AbstractGame;
 import bagel.Image;
@@ -13,6 +16,9 @@ public class ShadowLife extends AbstractGame {
     private static final int NUM_NUMERIC_ARGS = 2;
     // Total number of command line arguments:
     private static final int NUM_CL_ARGS = 3;
+    private static final int TICK_RATE_INDEX = 0;
+    private static final int MAX_TICKS_INDEX = 1;
+    private static final int WORLD_FILE_INDEX = 3;
     private static final Point BACKGROUND_TOP_LEFT = new Point(0, 0);
     private static Image backgroundImage;
     // Length of tick in milliseconds:
@@ -25,7 +31,9 @@ public class ShadowLife extends AbstractGame {
     private long lastTick = 0;
 
 
-    //Constructor
+    /**
+     * Constructor
+     */
     public ShadowLife(int tickRate, int maxTicks, String worldFile) {
         super();
         TICK_RATE = tickRate;
@@ -40,6 +48,32 @@ public class ShadowLife extends AbstractGame {
      * @param args Command line arguments
      */
     public static void main(String[] args) {
+        parseCommandLine(args);
+
+        /*
+         * Initialise game.
+         */
+        ShadowLife game = new ShadowLife(
+                Integer.parseInt(args[TICK_RATE_INDEX]),
+                Integer.parseInt(args[MAX_TICKS_INDEX]), args[WORLD_FILE_INDEX]);
+        // Run the game
+        game.run();
+
+    }
+
+    // Check if positive int.
+    private static boolean isPositiveInt(String s) {
+        try {
+            return Integer.parseInt(s) >= 0;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
+    /*
+     * Parse command line args.
+     */
+    private static void parseCommandLine(String[] args) {
         /*
         Get command-line arguments, if valid.
          */
@@ -60,36 +94,17 @@ public class ShadowLife extends AbstractGame {
         if (!wellFormed) {
             System.out.println("usage: ShadowLife <tick rate> <max ticks> <world file>\n");
             System.exit(-1);
-        } else {
-            /*
-             * Otherwise arguments are valid, so we can initialise game.
-             */
-            ShadowLife game = new ShadowLife(
-                    Integer.parseInt(args[0]), Integer.parseInt(args[1]), args[2]);
-            // Run the game
-            game.run();
-
-        }
-
-
-    }
-
-    // Check if positive int.
-    private static boolean isPositiveInt(String s) {
-        try {
-            return Integer.parseInt(s) >= 0;
-        } catch (NumberFormatException ex) {
-            return false;
         }
     }
 
-
-    /*Update method runs many times per second,
-    running logic and rendering simulation elements. */
+    /**
+     * Update method runs many times per second,
+    *running logic and rendering simulation elements.
+     */
     @Override
     protected void update(Input input) {
         // If no more active agents, halt
-        if(!world.anyActive()) {
+        if (!world.anyActive()) {
             halt();
         }
         // If it's time for another tick,  update actors
@@ -107,7 +122,7 @@ public class ShadowLife extends AbstractGame {
     }
 
     /*
-    * Do everything that happens each tick, inc updating actors
+     * Do everything that happens each tick, inc updating actors
      */
     private void tick() {
         ticksElapsed++;
@@ -127,9 +142,10 @@ public class ShadowLife extends AbstractGame {
 
     }
 
+    // Halt simulation
     private void halt() {
         // Print elapsed ticks
-        System.out.println(ticksElapsed+" ticks");
+        System.out.println(ticksElapsed + " ticks");
         // Print info for relevant actors (stockpiles and hoards)
         world.haltPrint();
         System.exit(0);
