@@ -26,17 +26,29 @@ public class Fruits {
         this.holder = holder;
     }
 
-    /* Reduces fruit count by 1 */
-    public void take() {
-
+    /**
+     * Reduces fruit count by 1 and sets agent to carrying
+     * @param agent Agent who gets the fruit
+     */
+    public void giveTo(Agent agent) {
+        numFruit--;
+        agent.setCarrying(true);
     }
 
-    /* Increases fruit count by 1 */
-    public void add() {
-
+    /**
+     * Takes fruit from a carrying agent.
+     * @param agent Agent to get the fruit from
+     */
+    public void getFrom(Agent agent) {
+        // Should only be called on an agent who is carrying
+        if (!agent.isCarrying()) {
+            throw new IllegalArgumentException();
+        }
+        numFruit++;
+        agent.setCarrying(false);
     }
 
-    /** Draws the currect number of fruit at the
+    /** Draws the correct number of fruit at the
      * top left corner of the 'holder' actor.
      *
      */
@@ -44,5 +56,13 @@ public class Fruits {
         font.drawString(Integer.toString(numFruit),
                 holder.getTile().toPixels().x,holder.getTile().toPixels().y);
 
+    }
+
+    /**
+     * Returns whether has at least one fruit
+     * @return boolean True if has at least one fruit
+     */
+    public boolean hasFruit() {
+        return numFruit > 0;
     }
 }

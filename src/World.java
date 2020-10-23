@@ -1,11 +1,10 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.PriorityQueue;
 
 public class World {
     // Which columns of the CSV have which information:
@@ -14,37 +13,17 @@ public class World {
     private static final int CSV_TYPE_COLUMN = 0;
     private static final int TOTAL_COLUMNS = 3;
 
-    /* a hashMap giving the appropriate actor subclass for each possible
-    actor type input in the world csv.
-    Referred to
-    https://stackoverflow.com/questions/35762823/static-hashmap-initialization
-    for how to initialise a static map
-     */
-    private static final HashMap<String, Class<? extends Actor>> actorNames =
-            new HashMap<>();
-
-    static {
-        actorNames.put("Tree", Tree.class);
-        actorNames.put("GoldenTree", Tree.class);
-        actorNames.put("Stockpile", Pile.class);
-        actorNames.put("Hoard", Pile.class);
-        actorNames.put("Pad", BasicActor.class);
-        actorNames.put("Fence", BasicActor.class);
-        actorNames.put("SignUp", Sign.class);
-        actorNames.put("SignDown", Sign.class);
-        actorNames.put("SignLeft", Sign.class);
-        actorNames.put("SignRight", Sign.class);
-        actorNames.put("Pool", BasicActor.class);
-        actorNames.put("Gatherer", Gatherer.class);
-        actorNames.put("Thief", Thief.class);
-    }
 
     private final ShadowLife game;
-    // Array of all the actors:
+    // Array of all the non-agent actors:
     private final ArrayList<Actor> allActors = new ArrayList<>();
 
+
     // HashMap from each occupied tile to the actors on that tile, for quick 'collision' detection
-    private final HashMap<TileCoordinates, ArrayList<Actor>> OccupiedTiles = new HashMap<>();
+    private final HashMap<TileCoordinates, PriorityQueue<Actor>> OccupiedTiles = new HashMap<>();
+
+    // Track number of active agents
+    private int numActive=0;
 
     // Constructor
     public World(ShadowLife game, String worldFile) {
@@ -63,18 +42,10 @@ public class World {
         }
     }
 
-    /**
-     * Returns an unmodifiable reference to the map of actor names
-     *
-     * @return Map<String, Class < ? extends Actor>> An unmodifiable reference to actorNames
-     */
-    public static Map<String, Class<? extends Actor>> getActorNames() {
-        return (Map<String, Class<? extends Actor>>) Collections.unmodifiableMap(actorNames);
-    }
-
-    public ArrayList<Actor> getActors() {
+    public ArrayList<Actor> getAllActors() {
         return allActors;
     }
+
 
     /* Load the world info and create actors.
      *Referred to https://stackabuse.com/reading-and-writing-csvs-in-java/ for
@@ -116,40 +87,113 @@ public class World {
             }
             // Get the name of the actor
             String actorName = data[CSV_TYPE_COLUMN];
-            // Create actor of appropriate class by referring to actorNames map
-            Actor actor;
+            Actor.ActorType type;
             try {
-                actor = actorFromCSVName(tileCoordinates, actorName);
-            } catch (NullPointerException e) {
+                type = Actor.ActorType.valueOf(actorName.toUpperCase());
+            } catch (IllegalArgumentException | NullPointerException e) {
                 throw new InvalidWorldLineException(worldFile, lineNumber);
             }
-            // Add actor to the array of all actors
-            this.allActors.add(actor);
+            // Create actor of appropriate class and type
+            Actor actor;
+            actor = Actor.actorFactory(tileCoordinates, this, type);
+            /*Add actor to allActors list
+             */
+            allActors.add(actor);
         }
     }
 
-    /* Takes the name of an actor (as written in world file) and creates an actor
-     * of appropriate class and 'variety' (if more than one actor shares the class,
-     * e.g. tree and golden tree)
+
+    /**
+     * Loops through allActors list and updates all
+     * actors of the passed type. Used to update
+     * Gatherers and Thieves.
+     *
+     * @param type The actor type to update.
      */
-    private Actor actorFromCSVName(TileCoordinates tile, String actorName) throws NullPointerException {
-        /* Array of arguments for constructor */
-        Object[] argsList = {tile, actorName};
-        /* Retrieve approprite subclass */
-        Class<? extends Actor> subClass = getActorNames().get(actorName);
-        Actor actor = null;
-        // Create actor of appropriate subclass and 'variety'
-        try {
-            actor = subClass.getDeclaredConstructor(Actor.argClasses).newInstance(argsList);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
-            System.exit(-1);
+    public void updateActors(Actor.ActorType type) {
+        for (Actor actor : allActors) {
+            if (actor.getType().equals(type)) {
+                actor.update();
+            }
         }
-        return actor;
-
     }
 
-    public void addToWorld(Actor actor) {
 
+    /**
+     * For each relevant actor, prints info.
+     * Called when simulation halts (only hoards and stockpile
+     * print their info).
+     */
+    public void haltPrint() {
+        for (Actor actor : allActors) {
+            actor.haltPrint();
+        }
+    }
+
+    /**
+     * Returns a priority queue of all the actors currently on
+     * the given tile.
+     *
+     * @param tile the tile to get the queue of actors for
+     * @return PriorityQueue<Actor> Priority queue of all the actors currently on
+     * the given tile.
+     */
+    public PriorityQueue<Actor> getActorsOntile(TileCoordinates tile) {
+        return OccupiedTiles.get(tile);
+    }
+
+    /**
+     * Adds the actor to the queue of actors for
+     * its tile in OccupiedTiles, or create new queue
+     * if OccupiedTiles currently has no entry for the tile.
+     *
+     * @param actor The Actor to add
+     */
+    public void addToTile(Actor actor) {
+        // If tile not already in OccupiedTiles as a key, create new entry.
+        if (!(OccupiedTiles.containsKey(actor.getTile()))) {
+            // Make comparator that uses the ordering from the actorType enum
+            Comparator<Actor> processOrder =
+                    (a1, a2) -> a1.getType().ordinal() - a2.getType().ordinal();
+            /*
+             Make new priority queue using the comparator, to hold the tile's actors in order
+             */
+            PriorityQueue<Actor> queue = new PriorityQueue<>(1,
+                    processOrder);
+            // Add tile to OccupiedTiles, with the queue
+            OccupiedTiles.put(actor.getTile(), queue);
+        }
+        // Add the actor to the queue for its tile
+        OccupiedTiles.get(actor.getTile()).add(actor);
+    }
+
+    /**
+     * Removes actor from given tile in OccupiedTiles
+     * @param actor The actor to remove
+     */
+    public void removeFromTile(Actor actor) {
+        OccupiedTiles.get(actor.getTile()).remove(actor);
+    }
+
+    /**
+     * Checks if any active agents
+     * @return boolean True if any active
+     */
+    public boolean anyActive() {
+        return numActive > 0;
+    }
+
+    /**
+     * Add 1 to count of active agents
+     */
+    public void addActive() {
+        numActive++;
+    }
+
+    /**
+     * Reduce count of active agents by 1.
+     */
+    public void removeActive() {
+        numActive--;
     }
 }

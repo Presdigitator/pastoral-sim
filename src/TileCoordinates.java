@@ -4,6 +4,8 @@
 
 import bagel.util.Point;
 
+import java.util.Objects;
+
 public class TileCoordinates {
     int x;
     int y;
@@ -23,6 +25,10 @@ public class TileCoordinates {
         return y;
     }
 
+    /**
+     * Returns tile location in pixel coordinates.
+     * @return Point The pixel coordinates of the tile
+     */
     public Point toPixels() {
         return new Point(x*TILE_SIZE, y*TILE_SIZE);
     }
@@ -32,7 +38,6 @@ public class TileCoordinates {
      * @param pixelX The pixel x-coordinate
      * @param pixelY The pixel y-coordinate
      * @return TileCoordinates A TileCoordinates object matching the pixel coordinates
-     * @throws UnalignedPixelException
      */
     public static TileCoordinates fromPixels(double pixelX, double pixelY) throws UnalignedPixelException {
         // Check that pixel location is valid, i.e. a multiple of the tile size
@@ -43,5 +48,27 @@ public class TileCoordinates {
         return new TileCoordinates((int)pixelX/TILE_SIZE, (int)pixelY/TILE_SIZE);
     }
 
+    /**
+     *  Gives equality if x and y values are equal
+     * @param o Object to be compared to
+     * @return boolean Return true if x and y are equal,
+     * false if not
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TileCoordinates that = (TileCoordinates) o;
+        return x == that.x &&
+                y == that.y;
+    }
 
+    /**
+     * Override hashcode to use x and y values
+     * @return int Hash
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
+    }
 }

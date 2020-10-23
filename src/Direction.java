@@ -7,9 +7,10 @@ import java.util.Random;
 public enum Direction {
 
     UP(0, -1),
+    RIGHT(1, 0),
     DOWN(0, 1),
-    LEFT(-1, 0),
-    RIGHT(1, 0);
+    LEFT(-1, 0);
+
 
     // Array and number  of all values, used in getRandomDirection()
     private static final Direction[] VALUES;
@@ -40,14 +41,19 @@ public enum Direction {
     }
 
     /**
-     * Changes the direction by rotating it right
-     * the number of times specified by the times
+     * Returns a direction which is a clockwise
+     * 90-degree rotations the number of times specified by the times
      * parameter.
      *
      * @param times The number of times to rotate
+     * @return Direction The rotated direction
      */
-    public void rotateRight(int times) {
-
+    public Direction getClockwiseNinety(int times) {
+        /*
+         *Returns the next value of the enum, e.g. if
+         * UP, returns RIGHT
+         */
+        return VALUES[(this.ordinal()+times) % SIZE];
     }
 
     /**

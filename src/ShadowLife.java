@@ -20,6 +20,7 @@ public class ShadowLife extends AbstractGame {
     // Maximum nnumber of ticks before ending game:
     private final int MAX_TICKS;
     private final World world;
+    private int ticksElapsed = 0;
     // When was the last tick (in milliseconds since UNIX epoch):
     private long lastTick = 0;
 
@@ -30,10 +31,11 @@ public class ShadowLife extends AbstractGame {
         TICK_RATE = tickRate;
         MAX_TICKS = maxTicks;
         world = new World(this, worldFile);
-        backgroundImage = new Image(Actor.IMAGE_DIRECTORY+"background.png");
+        backgroundImage = new Image(Actor.IMAGE_DIRECTORY + "background.png");
     }
 
-    /** The main method which sets things up and calls the game.run method
+    /**
+     * The main method which sets things up and calls the game.run method
      *
      * @param args Command line arguments
      */
@@ -53,7 +55,7 @@ public class ShadowLife extends AbstractGame {
             }
         }
         /*
-        * If invalid, print error message
+         * If invalid, print error message
          */
         if (!wellFormed) {
             System.out.println("usage: ShadowLife <tick rate> <max ticks> <world file>\n");
@@ -72,6 +74,7 @@ public class ShadowLife extends AbstractGame {
 
     }
 
+    // Check if positive int.
     private static boolean isPositiveInt(String s) {
         try {
             return Integer.parseInt(s) >= 0;
@@ -85,23 +88,50 @@ public class ShadowLife extends AbstractGame {
     running logic and rendering simulation elements. */
     @Override
     protected void update(Input input) {
-        //draw background
-        backgroundImage.drawFromTopLeft(
-                BACKGROUND_TOP_LEFT.x, BACKGROUND_TOP_LEFT.y);
-
-        // Update actors every tick
+        // If it's time for another tick,  update actors
         long time = System.currentTimeMillis();
         if ((time - this.lastTick) >= TICK_RATE) {
-            for (Actor actor : world.getActors()) actor.update();
-            this.lastTick = time;
+            tick();
         }
 
-        // Draw actors
-        for (Actor actor : world.getActors()) actor.render();
+        //draw background and actors
+        backgroundImage.drawFromTopLeft(
+                BACKGROUND_TOP_LEFT.x, BACKGROUND_TOP_LEFT.y);
+        for (Actor actor : world.getAllActors()) {
+            actor.render();
+        }
 
     }
 
-    private void endGame() {
+    /*
+    * Do everything that happens each tick, inc updating actors
+     */
+    private void tick() {
+        ticksElapsed++;
+        this.lastTick = System.currentTimeMillis();
+        // If more than MAX_TICKS have passed, time out
+        if (ticksElapsed > MAX_TICKS) {
+            System.out.println("Timed out");
+            System.exit(-1);
+        }
+        // Else loop through gatherers then thieves and run update algorithms
+        else {
+            world.updateActors(Actor.ActorType.GATHERER);
+            world.updateActors(Actor.ActorType.THIEF);
+            // If no more active agents, halt
+            if(!world.anyActive()) {
+                halt();
+            }
+        }
+
+    }
+
+    private void halt() {
+        // Print elapsed ticks
+        System.out.println(ticksElapsed+" ticks");
+        // Print info for relevant actors (stockpiles and hoards)
+        world.haltPrint();
+        System.exit(0);
 
     }
 

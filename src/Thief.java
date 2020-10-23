@@ -2,14 +2,14 @@
  *
  *Jalen Lyle-Holmes 1122679 jlyleholmes@student.unimelb.edu.au */
 
-import bagel.Image;
 
 public class Thief extends Agent {
-    public static final Image thiefImage = new Image(IMAGE_DIRECTORY + "thief.png");
+
     private boolean consuming;
 
-    public Thief(TileCoordinates tile, String actorName) {
-        super(tile);
+    public Thief(TileCoordinates tile, World world, ActorType type) {
+        super(tile, world, type);
+        super.setType(ActorType.THIEF);
         super.setDirection(Direction.UP);
         super.setCarrying(false);
         this.consuming = false;
@@ -40,9 +40,15 @@ public class Thief extends Agent {
         return null;
     }
 
+
+    /**
+     * Calls collision method for agent standing on this actor.
+     * (Visitor Pattern)
+     * @param agent The agent that is standing on this actor
+     */
     @Override
-    protected Image getImage() {
-        return thiefImage;
+    public void stoodOnBy(Agent agent) {
+
     }
 
     /**
@@ -54,7 +60,42 @@ public class Thief extends Agent {
         super.update();
     }
 
+    /**
+     * Respond to collision with Tree.
+     * @param tree the tree this agent is on
+     */
+    @Override
+    public void collideWith(Tree tree) {
 
+    }
+
+    /**
+     * Respond to collision with Pile
+     * @param pile the Pile this agent is on
+     */
+    @Override
+    public void collideWith(Pile pile) {
+
+    }
+
+
+    /**
+     * Respond to collision with BasicActor
+     * @param basicActor the basicActor this agent is on
+     */
+    @Override
+    public void collideWith(BasicActor basicActor) {
+
+    }
+
+    /**
+     * Respond to collision with another agent
+     * @param agent the other agent this agent is standing on
+     */
+    @Override
+    public void collideWith(Agent agent) {
+
+    }
 
 
 }

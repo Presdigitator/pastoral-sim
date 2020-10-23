@@ -5,58 +5,62 @@
 import bagel.Image;
 
 public class Pile extends Actor {
-
-    private static final Image stockpileImage =
-            new Image(IMAGE_DIRECTORY + "cherries.png");
-    private static final Image hoardImage =
-            new Image(IMAGE_DIRECTORY + "hoard.png");
     private final Fruits fruits;
     private Image image;
-    private PileVarieties pileVariety;
 
     /**
      * Depending on what variety of pile has been specified,
      * create an pile with the appropriate image and variety identifier.
      *
-     * @param tile        The tile on which to create the pile
-     * @param pileVariety The name of the variety of pile to create
+     * @param tile The tile on which to create the pile
+     * @param type The type of pile to create
      */
-    public Pile(TileCoordinates tile, String pileVariety) {
-        super(tile);
-        this.pileVariety = PileVarieties.valueOf(pileVariety);
+    public Pile(TileCoordinates tile, World world, ActorType type) {
+        super(tile, world, type);
+        setType(type);
         this.fruits = new Fruits(0, this);
-        this.image = this.pileVariety.image;
+        this.image = type.image;
     }
 
-    public PileVarieties getPileVariety() {
-        return pileVariety;
-    }
 
     @Override
-    protected Image getImage() {
+    public Image getImage() {
         return image;
     }
 
+    /**
+     * Renders the pile onscreen, with number of fruits
+     */
     @Override
     public void render() {
         super.render();
         fruits.drawNumber();
     }
 
-    /* Enum of the different varieties of pile which this class
-     * can represent, with matching image.
+
+    /**
+     * Prints number of fruits, called when simulation halts
      */
-    private enum PileVarieties {
-        Stockpile(stockpileImage),
-        Hoard(hoardImage);
-
-        Image image;
-
-        PileVarieties(Image image) {
-            this.image = image;
-        }
-
+    @Override
+    public void haltPrint() {
+        System.out.println(fruits.getNumFruit());
     }
 
+    /**
+     * Calls collision method for agent standing on this Pile.
+     * (Visitor Pattern)
+     * @param agent The agent that is standing on this actor
+     */
+    @Override
+    public void stoodOnBy(Agent agent) {
+        agent.collideWith(this);
+    }
 
+    /**
+     * Take one fruit from passed agent.
+     * @param agent The agent giving the fruit.
+     */
+    public void getFruitFrom(Agent agent) {
+        fruits.getFrom(agent);
+    }
 }
